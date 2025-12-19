@@ -2,6 +2,7 @@ import { useState } from 'react';
 import UserProfile from './components/UserProfile';
 import LikeButton from './components/LikeButton';
 import Counter from './components/Counter';
+import TextInput from './components/TextInput';
 
 function App() {
   const [totalLikes, setTotalLikes] = useState(0);
@@ -27,9 +28,7 @@ function App() {
       <section style={{ marginBottom: '2rem' }}>
         <h2>State Example</h2>
         <Counter />
-      </section>
-
-      <section style={{ marginBottom: '2rem' }}>
+      </section>      <section style={{ marginBottom: '2rem' }}>
         <h2>State + Props (Child to Parent Communication)</h2>
         <p>Total likes across all buttons: {totalLikes}</p>
         <div style={{ display: 'flex', gap: '1rem' }}>
@@ -37,6 +36,15 @@ function App() {
           <LikeButton initialLikes={12} onLike={handleLike} />
           <LikeButton onLike={handleLike} />
         </div>
+      </section>
+
+      <section style={{ marginBottom: '2rem' }}>
+        <h2>Text Input with Character Count</h2>
+        <TextInput 
+          label="Write your message"
+          maxLength={15}
+          placeholder="Start typing to see the character count..."
+        />
       </section>
     </div>
   );
