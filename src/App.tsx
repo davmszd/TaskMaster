@@ -1,65 +1,43 @@
-import Button from './components/Button';
-import Card from './components/Card';
-import Badge from './components/Badge';
+import { useState } from 'react';
 import UserProfile from './components/UserProfile';
-import Counter from './components/Counter.tsx';
+import LikeButton from './components/LikeButton';
+import Counter from './components/Counter';
 
 function App() {
-  const handleClick = () => {
-    alert('Button clicked!');
-  };
-  return (
-    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-      <h1>Component Basics</h1>
-        <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-        <Badge text="New" color="blue" />
-        <Badge text="Success" color="green" />
-        <Badge text="Error" color="red" />
-        <Badge text="Warning" color="yellow" />
-        <Badge text="Default" color="gray" />
-      </div>
+  const [totalLikes, setTotalLikes] = useState(0);
 
-      <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+  const handleLike = (newCount: number) => {
+    setTotalLikes((prev) => prev + (newCount > 0 ? 1 : -1));
+  };
+
+  return (
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
+      <h1>Props, State & Events</h1>
+
+      <section style={{ marginBottom: '2rem' }}>
+        <h2>Props Example</h2>
         <UserProfile
           name="Alice Johnson"
           email="alice@example.com"
           role="admin"
           isOnline={true}
         />
-        <UserProfile
-          name="Bob Smith"
-          email="bob@example.com"
-          role="user"
-          isOnline={false}
-        />
-        <UserProfile
-          name="Charlie Davis"
-          email="charlie@example.com"
-          role="guest"
-          isOnline={true}        />
-      </div>
+      </section>
 
-      <div style={{ marginBottom: '1.5rem' }}>
-        <Counter/>
-      </div>
+      <section style={{ marginBottom: '2rem' }}>
+        <h2>State Example</h2>
+        <Counter />
+      </section>
 
-      <Card
-        title="Welcome to React"
-        description="This is a reusable card component"
-        footer={
-          <>
-            <Button onClick={handleClick}>Learn More</Button>
-            <Button onClick={handleClick} variant="secondary">
-              Cancel
-            </Button>
-          </>
-        }
-      />
-
-      <Card
-        title="TypeScript Integration"
-        description="Type-safe props prevent errors at compile time"
-      />
+      <section style={{ marginBottom: '2rem' }}>
+        <h2>State + Props (Child to Parent Communication)</h2>
+        <p>Total likes across all buttons: {totalLikes}</p>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <LikeButton initialLikes={5} onLike={handleLike} />
+          <LikeButton initialLikes={12} onLike={handleLike} />
+          <LikeButton onLike={handleLike} />
+        </div>
+      </section>
     </div>
   );
 }
