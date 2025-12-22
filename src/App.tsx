@@ -1,21 +1,18 @@
-import EffectBasics from './examples/EffectBasics';
-import DocumentTitle from './examples/DocumentTitle';
-import Timer from './examples/Timer';
-import WindowEvents from './examples/WindowEvents';
-import LocalStorageExample from './examples/LocalStorageExample';
+import UseLocalStorageDemo from './examples/UseLocalStorageDemo';
+import UseFetchDemo from './examples/UseFetchDemo';
+import UseToggleDemo from './examples/UseToggleDemo';
+import UseDebounceDemo from './examples/UseDebounceDemo';
 
 function App() {
   return (
     <div>
-      <EffectBasics />
+      <UseLocalStorageDemo />
       <hr style={{ margin: '2rem' }} />
-      <DocumentTitle />
+      <UseFetchDemo />
       <hr style={{ margin: '2rem' }} />
-      <Timer />
+      <UseToggleDemo />
       <hr style={{ margin: '2rem' }} />
-      <WindowEvents />
-      <hr style={{ margin: '2rem' }} />
-      <LocalStorageExample />
+      <UseDebounceDemo />
     </div>
   );
 }
