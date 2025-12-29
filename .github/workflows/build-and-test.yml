@@ -36,7 +36,20 @@ jobs:
       
       - name: Run tests
         run: npm run test -- --run
-      
+      - name: Upload results
+        uses: dorny/test-reporter@v2
+        with:
+          name: webapp-test
+          fail-on-error: false
+          path: ./test-results/webapp-test-results.xml
+          reporter: jest-junit
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: webapp-test-results
+          path: ./test-results
+          retention-days: 1
       - name: Run tests with coverage
         run: npm run test:coverage -- --run
       
