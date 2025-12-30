@@ -40,6 +40,34 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
+      - name: Validate run_id is from main branch
+        run: |
+          # Get the workflow run information
+          RUN_INFO=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.inputs.run_id }}")
+          
+          # Extract the branch name
+          BRANCH=$(echo "$RUN_INFO" | jq -r '.head_branch')
+          
+          # Check if the API call was successful
+          if [ "$BRANCH" = "null" ] || [ -z "$BRANCH" ]; then
+            echo "Error: Could not fetch workflow run information for run_id ${{ github.event.inputs.run_id }}"
+            echo "Please verify the run_id is correct and from this repository."
+            exit 1
+          fi
+          
+          # Validate it's from main branch
+          if [ "$BRANCH" != "main" ]; then
+            echo "Error: Deployment rejected!"
+            echo "Run ID ${{ github.event.inputs.run_id }} is from branch: $BRANCH"
+            echo "Deployments are only allowed from the 'main' branch."
+            echo ""
+            echo "Please use a run_id from a build that ran on the main branch."
+            exit 1
+          fi
+          
+          echo "Validation passed: Run ID ${{ github.event.inputs.run_id }} is from main branch"
+      
       - name: Checkout code
         uses: actions/checkout@v4
         with:
