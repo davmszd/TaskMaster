@@ -1,11 +1,14 @@
 import AppLayout from './layouts/AppLayout';
 import TasksFeature from './features/task/TasksFeature.tsx';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 function App() {
   return (
-    <AppLayout>
-      <TasksFeature />
-    </AppLayout>
+    <ThemeProvider>
+      <AppLayout>
+        <TasksFeature />
+      </AppLayout>
+    </ThemeProvider>
   );
 }
 
