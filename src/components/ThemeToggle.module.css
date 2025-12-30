@@ -1,0 +1,36 @@
+.toggleButton {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: all 0.3s ease;
+  width: 40px;
+  height: 40px;
+}
+
+.toggleButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.toggleButton:active {
+  transform: scale(0.95);
+}
+
+.toggleButton svg {
+  display: block;
+}
+
+[data-theme='dark'] .toggleButton {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme='dark'] .toggleButton:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
