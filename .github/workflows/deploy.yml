@@ -101,17 +101,55 @@ jobs:
           NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
           echo "New version: $NEW_VERSION"
           
+          # Calculate next version (for release notes)
+          NEXT_PATCH=$((PATCH + 1))
+          NEXT_VERSION="${MAJOR}.${MINOR}.${NEXT_PATCH}"
+          
           # Save to output
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "tag=v$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
       
-      - name: Update version.json
+      - name: Update release notes
+        run: |
+          # Get current date
+          RELEASE_DATE=$(date '+%Y-%m-%d')
+          RELEASE_VERSION="${{ steps.version.outputs.version }}"
+          NEXT_VERSION="${{ steps.version.outputs.next_version }}"
+          
+          # Create temporary file
+          TEMP_FILE=$(mktemp)
+          
+          # Process RELEASE_NOTES.md
+          awk -v next_version="$NEXT_VERSION" -v release_version="$RELEASE_VERSION" -v released_on="$RELEASE_DATE" '
+            BEGIN { found = 0 }
+            {
+              if (match($0, /^## ([0-9]+\.[0-9]+\.[0-9]+)/, version) && !found) {
+                printf "## %s\n\n", next_version
+                printf "### Internal\n\n"
+                printf "### Features\n\n"
+                printf "### Fixes\n\n"
+                printf "## %s\n", release_version
+                printf "### Released on %s\n", released_on
+                found = 1
+                next
+              }
+              print
+            }
+          ' RELEASE_NOTES.md > "$TEMP_FILE"
+          
+          # Replace original file
+          mv "$TEMP_FILE" RELEASE_NOTES.md
+          
+          echo "Release notes updated successfully"
+      
+      - name: Update version.json and commit changes
         run: |
           echo "{\"version\": \"${{ steps.version.outputs.version }}\"}" > version.json
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add version.json
-          git commit -m "chore: bump version to ${{ steps.version.outputs.version }}"
+          git add version.json RELEASE_NOTES.md
+          git commit -m "chore: bump version to ${{ steps.version.outputs.version }} and update release notes"
           git push origin HEAD:main
       
       - name: Create and push tag
