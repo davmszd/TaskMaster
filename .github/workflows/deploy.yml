@@ -129,6 +129,32 @@ jobs:
           run-id: ${{ github.event.inputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Extract release notes for this version
+        id: extract_notes
+        run: |
+          # Extract the section for the current version from RELEASE_NOTES.md
+          VERSION="${{ steps.version.outputs.version }}"
+          
+          # Use awk to extract content between version headers
+          NOTES=$(awk -v version="$VERSION" '
+            /^## [0-9]+\.[0-9]+\.[0-9]+/ {
+              if ($2 == version) {
+                found = 1
+                next
+              } else if (found) {
+                exit
+              }
+            }
+            found { print }
+          ' RELEASE_NOTES.md)
+          
+          # Save to output using heredoc to handle multiline
+          {
+            echo 'notes<<EOF'
+            echo "$NOTES"
+            echo 'EOF'
+          } >> $GITHUB_OUTPUT
+      
       - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
@@ -139,9 +165,11 @@ jobs:
           body: |
             ## Release ${{ steps.version.outputs.tag }}
             
-            ${{ github.event.inputs.release_notes }}
+            ${{ steps.extract_notes.outputs.notes }}
             
-            **Version**: ${{ steps.version.outputs.version }}
+            ---
+            
+            **User Notes**: ${{ github.event.inputs.release_notes }}
             **Increment Type**: ${{ github.event.inputs.increment }}
             **Build Run ID**: ${{ github.event.inputs.run_id }}
             **Deployed**: ${{ github.event.repository.name }}
