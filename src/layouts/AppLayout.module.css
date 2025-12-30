@@ -5,10 +5,11 @@
 }
 
 .header {
-  background-color: #0066cc;
+  background-color: var(--accent);
   color: white;
   padding: 1rem 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px var(--shadow);
+  transition: background-color 0.3s ease;
 }
 
 .headerContent {
@@ -34,8 +35,9 @@
 }
 
 .footer {
-  background-color: #f8f9fa;
+  background-color: var(--bg-tertiary);
   padding: 1.5rem 2rem;
   text-align: center;
-  color: #6c757d;
+  color: var(--text-secondary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
