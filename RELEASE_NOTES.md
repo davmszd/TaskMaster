@@ -5,6 +5,7 @@
 ### Internal
 
 ### Features
+- Add dark mode
 
 ### Fixes
 
