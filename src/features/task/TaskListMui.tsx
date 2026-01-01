@@ -6,7 +6,6 @@ import {
   Box,
   Typography,
   Button,
-  ButtonGroup,
   CircularProgress,
   Alert,
   ToggleButtonGroup,
@@ -114,34 +113,60 @@ function TaskListMui({ tasks, setTasks }: TaskListMuiProps) {
         </ToggleButtonGroup>
       </Box>
 
-      <Box sx={{ mb: 3 }}>
-        <ButtonGroup variant="outlined" fullWidth>
-          <Button
-            variant={filter === 'all' ? 'contained' : 'outlined'}
-            onClick={() => setFilter('all')}
-          >
-            All ({tasks.length})
-          </Button>
-          <Button
-            variant={filter === 'todo' ? 'contained' : 'outlined'}
-            onClick={() => setFilter('todo')}
-          >
-            To Do ({tasks.filter((t) => t.status === 'todo').length})
-          </Button>
-          <Button
-            variant={filter === 'in-progress' ? 'contained' : 'outlined'}
-            onClick={() => setFilter('in-progress')}
-          >
-            In Progress (
-            {tasks.filter((t) => t.status === 'in-progress').length})
-          </Button>
-          <Button
-            variant={filter === 'done' ? 'contained' : 'outlined'}
-            onClick={() => setFilter('done')}
-          >
-            Done ({tasks.filter((t) => t.status === 'done').length})
-          </Button>
-        </ButtonGroup>
+      <Box sx={{ mb: 3, display: 'flex', gap: 0.5 }}>
+        <Button
+          variant={filter === 'all' ? 'contained' : 'outlined'}
+          onClick={() => setFilter('all')}
+          sx={{
+            borderRadius: '8px',
+            borderWidth: '2px',
+            '&:hover': {
+              borderWidth: '2px',
+            },
+          }}
+        >
+          All ({tasks.length})
+        </Button>
+        <Button
+          variant={filter === 'todo' ? 'contained' : 'outlined'}
+          onClick={() => setFilter('todo')}
+          sx={{
+            borderRadius: '8px',
+            borderWidth: '2px',
+            '&:hover': {
+              borderWidth: '2px',
+            },
+          }}
+        >
+          To Do ({tasks.filter((t) => t.status === 'todo').length})
+        </Button>
+        <Button
+          variant={filter === 'in-progress' ? 'contained' : 'outlined'}
+          onClick={() => setFilter('in-progress')}
+          sx={{
+            borderRadius: '8px',
+            borderWidth: '2px',
+            '&:hover': {
+              borderWidth: '2px',
+            },
+          }}
+        >
+          In Progress (
+          {tasks.filter((t) => t.status === 'in-progress').length})
+        </Button>
+        <Button
+          variant={filter === 'done' ? 'contained' : 'outlined'}
+          onClick={() => setFilter('done')}
+          sx={{
+            borderRadius: '8px',
+            borderWidth: '2px',
+            '&:hover': {
+              borderWidth: '2px',
+            },
+          }}
+        >
+          Done ({tasks.filter((t) => t.status === 'done').length})
+        </Button>
       </Box>
 
       {filteredTasks.length === 0 ? (
