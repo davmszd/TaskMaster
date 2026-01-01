@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Box, Button, Dialog, DialogTitle, DialogContent } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
-import TaskListMui from './TaskListMui';
-import TaskFormMui from './TaskFormMui';
+import TaskList from './TaskList';
 import type { Task } from '../../types';
+import TaskForm from "./TaskForm.tsx";
 
-function TasksFeatureMui() {
+function TasksFeature() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -40,7 +40,7 @@ function TasksFeatureMui() {
         <DialogTitle>Create New Task</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 1 }}>
-            <TaskFormMui
+            <TaskForm
               onSubmit={handleAddTask}
               onCancel={() => setIsModalOpen(false)}
             />
@@ -48,9 +48,9 @@ function TasksFeatureMui() {
         </DialogContent>
       </Dialog>
 
-      <TaskListMui tasks={tasks} setTasks={setTasks} />
+      <TaskList tasks={tasks} setTasks={setTasks} />
     </>
   );
 }
 
-export default TasksFeatureMui;
+export default TasksFeature;
