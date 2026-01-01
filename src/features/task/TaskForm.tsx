@@ -7,7 +7,7 @@ interface TaskFormMuiProps {
   onCancel: () => void;
 }
 
-function TaskFormMui({ onSubmit, onCancel }: TaskFormMuiProps) {
+function TaskForm({ onSubmit, onCancel }: TaskFormMuiProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
@@ -90,4 +90,4 @@ function TaskFormMui({ onSubmit, onCancel }: TaskFormMuiProps) {
   );
 }
 
-export default TaskFormMui;
+export default TaskForm;
