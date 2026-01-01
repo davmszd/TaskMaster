@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { ThemeContext, type Theme } from './ThemeContext.context';
+import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    // Check localStorage first
     const savedTheme = localStorage.getItem('theme') as Theme | null;
     if (savedTheme) {
       return savedTheme;
     }
 
-    // Check system preference
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
       return 'dark';
     }
@@ -18,9 +18,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    // Apply theme to document
     document.documentElement.setAttribute('data-theme', theme);
-    // Save to localStorage
     localStorage.setItem('theme', theme);
   }, [theme]);
 
@@ -28,9 +26,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
   };
 
+  const muiTheme = createTheme({
+    palette: {
+      mode: theme,
+    },
+  });
+
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
+      <MuiThemeProvider theme={muiTheme}>
+        <CssBaseline />
+        {children}
+      </MuiThemeProvider>
     </ThemeContext.Provider>
   );
 }
