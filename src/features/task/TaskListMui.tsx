@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { tasksApi } from '../../api/tasks';
 import type { Task } from '../../types';
-import TaskCardMui from './TaskCardMui';
+import TaskCard from './TaskCard';
 import {
   Box,
   Typography,
@@ -182,7 +182,7 @@ function TaskListMui({ tasks, setTasks }: TaskListMuiProps) {
         <Grid container spacing={2}>
           {filteredTasks.map((task) => (
             <Grid key={task.id} size={{ xs: 12, sm: 6, md: 4 }}>
-              <TaskCardMui
+              <TaskCard
                 task={task}
                 onDelete={handleDelete}
                 onStatusChange={handleStatusChange}
@@ -194,7 +194,7 @@ function TaskListMui({ tasks, setTasks }: TaskListMuiProps) {
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {filteredTasks.map((task) => (
-            <TaskCardMui
+            <TaskCard
               key={task.id}
               task={task}
               onDelete={handleDelete}

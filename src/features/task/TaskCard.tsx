@@ -1,7 +1,23 @@
 import type { Task } from '../../types';
-import { classNames } from '../../utils/classNames';
 import { getRelativeTime, formatDate } from '../../utils/date';
-import styles from './TaskCard.module.css';
+import {
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  Chip,
+  Box,
+  IconButton,
+  Select,
+  MenuItem,
+  Stack,
+} from '@mui/material';
+import {
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  CalendarToday,
+  Schedule,
+} from '@mui/icons-material';
 
 type TaskCardProps = {
   task: Task;
@@ -18,103 +34,164 @@ function TaskCard({
   onEdit,
   showActions = true,
 }: TaskCardProps) {
-  const cardClass = classNames(
-    styles.card,
-    task.status === 'done' && styles.cardCompleted
-  );
+  const getPriorityColor = (
+    priority: string
+  ):
+    | 'default'
+    | 'primary'
+    | 'secondary'
+    | 'error'
+    | 'info'
+    | 'success'
+    | 'warning' => {
+    switch (priority) {
+      case 'low':
+        return 'success';
+      case 'medium':
+        return 'warning';
+      case 'high':
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
 
-  const priorityClass = classNames(
-    styles.badge,
-    styles.priorityBadge,
-    task.priority === 'low' && styles.priorityLow,
-    task.priority === 'medium' && styles.priorityMedium,
-    task.priority === 'high' && styles.priorityHigh
-  );
-
-  const statusClass = classNames(
-    styles.badge,
-    styles.statusBadge,
-    task.status === 'todo' && styles.statusTodo,
-    task.status === 'in-progress' && styles.statusInProgress,
-    task.status === 'done' && styles.statusDone
-  );
+  const getStatusColor = (
+    status: string
+  ):
+    | 'default'
+    | 'primary'
+    | 'secondary'
+    | 'error'
+    | 'info'
+    | 'success'
+    | 'warning' => {
+    switch (status) {
+      case 'todo':
+        return 'default';
+      case 'in-progress':
+        return 'info';
+      case 'done':
+        return 'success';
+      default:
+        return 'default';
+    }
+  };
 
   return (
-    <div className={cardClass}>
-      <div className={styles.header}>
-        <h3 className={styles.title}>{task.title}</h3>
-        <div className={styles.badges}>
-          <span className={priorityClass}>{task.priority}</span>
-          <span className={statusClass}>
-            {task.status === 'in-progress'
-              ? 'In Progress'
-              : task.status.toUpperCase()}
-          </span>
-        </div>
-      </div>
+    <Card
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        opacity: task.status === 'done' ? 0.7 : 1,
+      }}
+    >
+      <CardContent sx={{ flexGrow: 1 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            mb: 1,
+          }}
+        >
+          <Typography variant="h6" component="h3" sx={{ flexGrow: 1 }}>
+            {task.title}
+          </Typography>
+        </Box>
 
-      {task.description && (
-        <p className={styles.description}>{task.description}</p>
-      )}
+        <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+          <Chip
+            label={task.priority}
+            color={getPriorityColor(task.priority)}
+            size="small"
+          />
+          <Chip
+            label={
+              task.status === 'in-progress'
+                ? 'In Progress'
+                : task.status.toUpperCase()
+            }
+            color={getStatusColor(task.status)}
+            size="small"
+          />
+        </Stack>
 
-      <div className={styles.meta}>
-        <span className={styles.metaItem}>
-          <span className={styles.icon}>📅</span>
-          Created {getRelativeTime(task.createdAt)}
-        </span>
-        {task.dueDate && (
-          <span className={styles.metaItem}>
-            <span className={styles.icon}>⏰</span>
-            Due {formatDate(task.dueDate)}
-          </span>
+        {task.description && (
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {task.description}
+          </Typography>
         )}
-      </div>
+
+        <Stack spacing={1}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CalendarToday sx={{ fontSize: 16, color: 'text.secondary' }} />
+            <Typography variant="caption" color="text.secondary">
+              Created {getRelativeTime(task.createdAt)}
+            </Typography>
+          </Box>
+          {task.dueDate && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Schedule sx={{ fontSize: 16, color: 'text.secondary' }} />
+              <Typography variant="caption" color="text.secondary">
+                Due {formatDate(task.dueDate)}
+              </Typography>
+            </Box>
+          )}
+        </Stack>
+      </CardContent>
 
       {showActions && (
-        <div className={styles.actions}>
+        <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
           {onStatusChange && (
-            <select
-              className={styles.statusSelect}
+            <Select
+              size="small"
               value={task.status}
               onChange={(e) =>
                 onStatusChange(task.id, e.target.value as Task['status'])
               }
+              sx={{ minWidth: 120 }}
               aria-label="Change task status"
             >
-              <option value="todo">To Do</option>
-              <option value="in-progress">In Progress</option>
-              <option value="done">Done</option>
-            </select>
+              <MenuItem value="todo">To Do</MenuItem>
+              <MenuItem value="in-progress">In Progress</MenuItem>
+              <MenuItem value="done">Done</MenuItem>
+            </Select>
           )}
 
-          {onEdit && (
-            <button
-              className={`${styles.button} ${styles.editButton}`}
-              onClick={() => onEdit(task.id)}
-              aria-label="Edit task"
-              title="Edit task"
-            >
-              ✏️
-            </button>
-          )}
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {onEdit && (
+              <IconButton
+                color="primary"
+                onClick={() => onEdit(task.id)}
+                aria-label="Edit task"
+                title="Edit task"
+                size="small"
+              >
+                <EditIcon />
+              </IconButton>
+            )}
 
-          {onDelete && (
-            <button
-              className={`${styles.button} ${styles.deleteButton}`}
-              onClick={() => {
-                if (confirm(`Delete "${task.title}"?`)) {
-                  onDelete(task.id);
-                }
-              }}
-              aria-label="Delete task"
-              title="Delete task"
-            >
-              🗑️
-            </button>
-          )}
-        </div>
+            {onDelete && (
+              <IconButton
+                color="error"
+                onClick={() => {
+                  if (confirm(`Delete "${task.title}"?`)) {
+                    onDelete(task.id);
+                  }
+                }}
+                aria-label="Delete task"
+                title="Delete task"
+                size="small"
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
+          </Box>
+        </CardActions>
       )}
-    </div>
+    </Card>
   );
 }
 
