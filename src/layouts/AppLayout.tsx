@@ -1,5 +1,18 @@
-import styles from './AppLayout.module.css';
 import { ThemeToggle } from '../components/ThemeToggle';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Container,
+  IconButton,
+} from '@mui/material';
+import {
+  Task as TaskIcon,
+  Notifications,
+  Settings,
+  AccountCircle,
+} from '@mui/icons-material';
 
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -7,20 +20,51 @@ type AppLayoutProps = {
 
 function AppLayout({ children }: AppLayoutProps) {
   return (
-    <div className={styles.layout}>
-      <header className={styles.header}>
-        <div className={styles.headerContent}>
-          <h1 className={styles.logo}>TaskMaster</h1>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <AppBar position="static" elevation={2}>
+        <Toolbar>
+          <TaskIcon sx={{ mr: 2 }} />
+          <Typography
+            variant="h6"
+            component="h1"
+            sx={{ flexGrow: 1, fontWeight: 'bold' }}
+          >
+            TaskMaster
+          </Typography>
+          <IconButton color="inherit" sx={{ mr: 1 }}>
+            <Notifications />
+          </IconButton>
+          <IconButton color="inherit" sx={{ mr: 2 }}>
+            <Settings />
+          </IconButton>
+          <IconButton color="inherit">
+            <AccountCircle />
+          </IconButton>
           <ThemeToggle />
-        </div>
-      </header>
+        </Toolbar>
+      </AppBar>
 
-      <main className={styles.main}>{children}</main>
+      <Container component="main" sx={{ flex: 1, py: 4 }} maxWidth="lg">
+        {children}
+      </Container>
 
-      <footer className={styles.footer}>
-        <p>© 2024 TaskMaster. Built with React + TypeScript.</p>
-      </footer>
-    </div>
+      <Box
+        component="footer"
+        sx={{
+          bgcolor: 'background.paper',
+          py: 3,
+          mt: 'auto',
+          borderTop: 1,
+          borderColor: 'divider',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Typography variant="body2" color="text.secondary" align="center">
+            © 2024 TaskMaster. Built with React + TypeScript + Material-UI.
+          </Typography>
+        </Container>
+      </Box>
+    </Box>
   );
 }
 
