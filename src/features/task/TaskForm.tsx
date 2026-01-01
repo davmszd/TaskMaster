@@ -1,152 +1,92 @@
 import { useState } from 'react';
-import styles from './TaskForm.module.css';
+import { Box, TextField, Button, Stack, MenuItem } from '@mui/material';
 import type { Task } from '../../types';
 
-type TaskFormProps = {
+interface TaskFormMuiProps {
   onSubmit: (task: Omit<Task, 'id' | 'createdAt'>) => void;
   onCancel: () => void;
-  initialValues?: Partial<Task>;
-};
+}
 
-function TaskForm({ onSubmit, onCancel, initialValues }: TaskFormProps) {
-  const [title, setTitle] = useState(initialValues?.title || '');
-  const [description, setDescription] = useState(
-    initialValues?.description || ''
-  );
-  const [status, setStatus] = useState<Task['status']>(
-    initialValues?.status || 'todo'
-  );
-  const [priority, setPriority] = useState<Task['priority']>(
-    initialValues?.priority || 'medium'
-  );
-  const [dueDate, setDueDate] = useState(
-    initialValues?.dueDate
-      ? initialValues.dueDate.toISOString().split('T')[0]
-      : ''
-  );
-  const [errors, setErrors] = useState<{ title?: string }>({});
-
-  const validate = () => {
-    const newErrors: { title?: string } = {};
-
-    if (!title.trim()) {
-      newErrors.title = 'Title is required';
-    } else if (title.length < 3) {
-      newErrors.title = 'Title must be at least 3 characters';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+function TaskForm({ onSubmit, onCancel }: TaskFormMuiProps) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
+  const [dueDate, setDueDate] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate()) {
-      return;
-    }
+    if (!title.trim()) return;
 
     onSubmit({
       title: title.trim(),
       description: description.trim(),
-      status,
       priority,
+      status: 'todo',
       dueDate: dueDate ? new Date(dueDate) : undefined,
     });
+
+    // Reset form
+    setTitle('');
+    setDescription('');
+    setPriority('medium');
+    setDueDate('');
   };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <div className={styles.field}>
-        <label className={styles.label} htmlFor="title">
-          Title <span className={styles.required}>*</span>
-        </label>
-        <input
-          id="title"
-          type="text"
-          className={`${styles.input} ${errors.title ? styles.inputError : ''}`}
+    <Box component="form" onSubmit={handleSubmit}>
+      <Stack spacing={3}>
+        <TextField
+          label="Task Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter task title"
+          required
+          fullWidth
           autoFocus
         />
-        {errors.title && <span className={styles.error}>{errors.title}</span>}
-      </div>
 
-      <div className={styles.field}>
-        <label className={styles.label} htmlFor="description">
-          Description
-        </label>
-        <textarea
-          id="description"
-          className={styles.textarea}
+        <TextField
+          label="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Enter task description"
-          rows={4}
+          multiline
+          rows={3}
+          fullWidth
         />
-      </div>
 
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="status">
-            Status
-          </label>
-          <select
-            id="status"
-            className={styles.select}
-            value={status}
-            onChange={(e) => setStatus(e.target.value as Task['status'])}
-          >
-            <option value="todo">To Do</option>
-            <option value="in-progress">In Progress</option>
-            <option value="done">Done</option>
-          </select>
-        </div>
+        <TextField
+          select
+          label="Priority"
+          value={priority}
+          onChange={(e) =>
+            setPriority(e.target.value as 'low' | 'medium' | 'high')
+          }
+          fullWidth
+        >
+          <MenuItem value="low">Low</MenuItem>
+          <MenuItem value="medium">Medium</MenuItem>
+          <MenuItem value="high">High</MenuItem>
+        </TextField>
 
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="priority">
-            Priority
-          </label>
-          <select
-            id="priority"
-            className={styles.select}
-            value={priority}
-            onChange={(e) => setPriority(e.target.value as Task['priority'])}
-          >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-        </div>
-      </div>
-
-      <div className={styles.field}>
-        <label className={styles.label} htmlFor="dueDate">
-          Due Date
-        </label>
-        <input
-          id="dueDate"
+        <TextField
+          label="Due Date"
           type="date"
-          className={styles.input}
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
+          InputLabelProps={{ shrink: true }}
+          fullWidth
         />
-      </div>
 
-      <div className={styles.actions}>
-        <button
-          type="button"
-          className={styles.cancelButton}
-          onClick={onCancel}
-        >
-          Cancel
-        </button>
-        <button type="submit" className={styles.submitButton}>
-          {initialValues ? 'Update Task' : 'Create Task'}
-        </button>
-      </div>
-    </form>
+        <Stack direction="row" spacing={2} justifyContent="flex-end">
+          <Button onClick={onCancel} variant="outlined">
+            Cancel
+          </Button>
+          <Button type="submit" variant="contained" disabled={!title.trim()}>
+            Create Task
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
   );
 }
 

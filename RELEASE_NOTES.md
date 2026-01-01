@@ -5,6 +5,8 @@
 ### Internal
 
 ### Features
+- Add MUI
+- Use MUI dark theme
 
 ### Fixes
 

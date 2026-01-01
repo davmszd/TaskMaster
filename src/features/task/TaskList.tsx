@@ -1,8 +1,19 @@
 import { useState, useEffect } from 'react';
 import { tasksApi } from '../../api/tasks';
-import styles from './TaskList.module.css';
 import type { Task } from '../../types';
 import TaskCard from './TaskCard';
+import {
+  Box,
+  Typography,
+  Button,
+  CircularProgress,
+  Alert,
+  ToggleButtonGroup,
+  ToggleButton,
+  Paper,
+} from '@mui/material';
+import { ViewList, ViewModule } from '@mui/icons-material';
+import Grid from '@mui/material/Grid';
 
 type FilterStatus = 'all' | Task['status'];
 type ViewMode = 'list' | 'card';
@@ -43,6 +54,7 @@ function TaskList({ tasks, setTasks }: TaskListProps) {
       alert(`Failed to delete task ${err}`);
     }
   };
+
   const handleStatusChange = async (id: string, status: Task['status']) => {
     try {
       await tasksApi.updateTask(id, { status });
@@ -58,88 +70,129 @@ function TaskList({ tasks, setTasks }: TaskListProps) {
     filter === 'all' ? tasks : tasks.filter((task) => task.status === filter);
 
   if (isLoading) {
-    return <div className={styles.loading}>Loading tasks...</div>;
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (error) {
-    return <div style={{ color: '#c00' }}>Error: {error}</div>;
+    return (
+      <Box sx={{ p: 2 }}>
+        <Alert severity="error">Error: {error}</Alert>
+      </Box>
+    );
   }
+
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>My Tasks</h2>
-        <div className={styles.headerActions}>
-          <div className={styles.viewToggle}>
-            <label className={styles.radioLabel}>
-              <input
-                type="radio"
-                name="viewMode"
-                value="list"
-                checked={viewMode === 'list'}
-                onChange={(e) => setViewMode(e.target.value as ViewMode)}
-                className={styles.radioInput}
-              />
-              <span className={styles.radioText}>📋 List</span>
-            </label>
-            <label className={styles.radioLabel}>
-              <input
-                type="radio"
-                name="viewMode"
-                value="card"
-                checked={viewMode === 'card'}
-                onChange={(e) => setViewMode(e.target.value as ViewMode)}
-                className={styles.radioInput}
-              />
-              <span className={styles.radioText}>🎴 Card</span>
-            </label>
-          </div>
-        </div>
-      </div>
-      <div className={styles.filters}>
-        <button
-          className={`${styles.filterButton} ${filter === 'all' ? styles.active : ''}`}
+    <Box sx={{ p: 2 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3,
+        }}
+      >
+        <Typography variant="h4" component="h2">
+          My Tasks
+        </Typography>
+        <ToggleButtonGroup
+          value={viewMode}
+          exclusive
+          onChange={(_, newMode) => newMode && setViewMode(newMode)}
+          size="small"
+        >
+          <ToggleButton value="list" aria-label="list view">
+            <ViewList />
+          </ToggleButton>
+          <ToggleButton value="card" aria-label="card view">
+            <ViewModule />
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
+
+      <Box sx={{ mb: 3, display: 'flex', gap: 0.5 }}>
+        <Button
+          variant={filter === 'all' ? 'contained' : 'outlined'}
           onClick={() => setFilter('all')}
+          sx={{
+            borderRadius: '8px',
+            borderWidth: '2px',
+            '&:hover': {
+              borderWidth: '2px',
+            },
+          }}
         >
           All ({tasks.length})
-        </button>
-        <button
-          className={`${styles.filterButton} ${filter === 'todo' ? styles.active : ''}`}
+        </Button>
+        <Button
+          variant={filter === 'todo' ? 'contained' : 'outlined'}
           onClick={() => setFilter('todo')}
+          sx={{
+            borderRadius: '8px',
+            borderWidth: '2px',
+            '&:hover': {
+              borderWidth: '2px',
+            },
+          }}
         >
           To Do ({tasks.filter((t) => t.status === 'todo').length})
-        </button>
-        <button
-          className={`${styles.filterButton} ${filter === 'in-progress' ? styles.active : ''}`}
+        </Button>
+        <Button
+          variant={filter === 'in-progress' ? 'contained' : 'outlined'}
           onClick={() => setFilter('in-progress')}
+          sx={{
+            borderRadius: '8px',
+            borderWidth: '2px',
+            '&:hover': {
+              borderWidth: '2px',
+            },
+          }}
         >
-          In Progress ({tasks.filter((t) => t.status === 'in-progress').length})
-        </button>
-        <button
-          className={`${styles.filterButton} ${filter === 'done' ? styles.active : ''}`}
+          In Progress (
+          {tasks.filter((t) => t.status === 'in-progress').length})
+        </Button>
+        <Button
+          variant={filter === 'done' ? 'contained' : 'outlined'}
           onClick={() => setFilter('done')}
+          sx={{
+            borderRadius: '8px',
+            borderWidth: '2px',
+            '&:hover': {
+              borderWidth: '2px',
+            },
+          }}
         >
           Done ({tasks.filter((t) => t.status === 'done').length})
-        </button>
-      </div>{' '}
+        </Button>
+      </Box>
+
       {filteredTasks.length === 0 ? (
-        <div className={styles.emptyState}>
-          <h3>No tasks found</h3>
-          <p>Create your first task to get started!</p>
-        </div>
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h6" gutterBottom>
+            No tasks found
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Create your first task to get started!
+          </Typography>
+        </Paper>
       ) : viewMode === 'card' ? (
-        <div className={styles.taskGrid}>
+        <Grid container spacing={2}>
           {filteredTasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onDelete={handleDelete}
-              onStatusChange={handleStatusChange}
-              onEdit={(id) => alert(`Edit task ${id}`)}
-            />
+            <Grid key={task.id} size={{ xs: 12, sm: 6, md: 4 }}>
+              <TaskCard
+                task={task}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+                onEdit={(id) => alert(`Edit task ${id}`)}
+              />
+            </Grid>
           ))}
-        </div>
+        </Grid>
       ) : (
-        <div className={styles.taskList}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {filteredTasks.map((task) => (
             <TaskCard
               key={task.id}
@@ -150,9 +203,9 @@ function TaskList({ tasks, setTasks }: TaskListProps) {
               showActions={true}
             />
           ))}
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }
 

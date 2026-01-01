@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import TaskCard from './TaskCard';
 import type { Task } from '../../types';
 
@@ -36,13 +37,18 @@ describe('TaskCard', () => {
     expect(mockDelete).toHaveBeenCalledWith('1');
   });
 
-  it('calls onStatusChange when status is changed', () => {
+  it('calls onStatusChange when status is changed', async () => {
     const mockStatusChange = vi.fn();
-
+    const user = userEvent.setup();
     render(<TaskCard task={mockTask} onStatusChange={mockStatusChange} />);
 
-    const statusSelect = screen.getByLabelText('Change task status');
-    fireEvent.change(statusSelect, { target: { value: 'done' } });
+    const statusSelect = screen.getByRole('combobox');
+    await user.click(statusSelect);
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: 'Done' })).toBeInTheDocument();
+    });
+    const doneOption = screen.getByRole('option', { name: 'Done' });
+    await user.click(doneOption);
 
     expect(mockStatusChange).toHaveBeenCalledWith('1', 'done');
   });
@@ -75,9 +81,12 @@ describe('TaskCard', () => {
   it('applies completed style when task is done', () => {
     const completedTask = { ...mockTask, status: 'done' as const };
     const { container } = render(<TaskCard task={completedTask} />);
-    const card = container.firstChild as HTMLElement;
-    expect(card.className).toContain('card');
-    expect(card.className).toContain('cardCompleted');
+
+    const card = container.querySelector('[class*="MuiCard-root"]') as HTMLElement;
+    const cardStyle = window.getComputedStyle(card);
+
+    expect(card).toBeInTheDocument();
+    expect(cardStyle.opacity).toBe('0.7');
   });
 
   it('renders without optional fields', () => {
