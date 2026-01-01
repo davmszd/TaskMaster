@@ -6,6 +6,10 @@ import {
   Box,
   Typography,
   Button,
+<<<<<<< Updated upstream
+=======
+  ButtonGroup,
+>>>>>>> Stashed changes
   CircularProgress,
   Alert,
   ToggleButtonGroup,
@@ -113,6 +117,7 @@ function TaskListMui({ tasks, setTasks }: TaskListMuiProps) {
         </ToggleButtonGroup>
       </Box>
 
+<<<<<<< Updated upstream
       <Box sx={{ mb: 3, display: 'flex', gap: 0.5 }}>
         <Button
           variant={filter === 'all' ? 'contained' : 'outlined'}
@@ -167,6 +172,36 @@ function TaskListMui({ tasks, setTasks }: TaskListMuiProps) {
         >
           Done ({tasks.filter((t) => t.status === 'done').length})
         </Button>
+=======
+      <Box sx={{ mb: 3 }}>
+        <ButtonGroup variant="outlined" fullWidth>
+          <Button
+            variant={filter === 'all' ? 'contained' : 'outlined'}
+            onClick={() => setFilter('all')}
+          >
+            All ({tasks.length})
+          </Button>
+          <Button
+            variant={filter === 'todo' ? 'contained' : 'outlined'}
+            onClick={() => setFilter('todo')}
+          >
+            To Do ({tasks.filter((t) => t.status === 'todo').length})
+          </Button>
+          <Button
+            variant={filter === 'in-progress' ? 'contained' : 'outlined'}
+            onClick={() => setFilter('in-progress')}
+          >
+            In Progress (
+            {tasks.filter((t) => t.status === 'in-progress').length})
+          </Button>
+          <Button
+            variant={filter === 'done' ? 'contained' : 'outlined'}
+            onClick={() => setFilter('done')}
+          >
+            Done ({tasks.filter((t) => t.status === 'done').length})
+          </Button>
+        </ButtonGroup>
+>>>>>>> Stashed changes
       </Box>
 
       {filteredTasks.length === 0 ? (

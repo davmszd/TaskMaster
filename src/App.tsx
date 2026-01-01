@@ -1,14 +1,25 @@
 import AppLayout from './layouts/AppLayout';
 import TasksFeature from './features/task/TasksFeature.tsx';
 import TasksFeatureMui from './features/task/TasksFeatureMui.tsx';
+<<<<<<< Updated upstream
+=======
+import MuiDemo from './pages/MuiDemo';
+>>>>>>> Stashed changes
 import { ThemeProvider } from './contexts/ThemeContext';
 import { useState } from 'react';
 import { Button, Box, ButtonGroup } from '@mui/material';
 
+<<<<<<< Updated upstream
 type View = 'tasks-original' | 'tasks-mui';
 
 function App() {
   const [currentView, setCurrentView] = useState<View>('tasks-mui');
+=======
+type View = 'mui-demo' | 'tasks-original' | 'tasks-mui';
+
+function App() {
+  const [currentView, setCurrentView] = useState<View>('mui-demo');
+>>>>>>> Stashed changes
 
   return (
     <ThemeProvider>
@@ -24,6 +35,15 @@ function App() {
         >
           <ButtonGroup variant="outlined" aria-label="navigation button group">
             <Button
+<<<<<<< Updated upstream
+=======
+              variant={currentView === 'mui-demo' ? 'contained' : 'outlined'}
+              onClick={() => setCurrentView('mui-demo')}
+            >
+              MUI Demo
+            </Button>
+            <Button
+>>>>>>> Stashed changes
               variant={
                 currentView === 'tasks-original' ? 'contained' : 'outlined'
               }
@@ -39,6 +59,10 @@ function App() {
             </Button>
           </ButtonGroup>
         </Box>
+<<<<<<< Updated upstream
+=======
+        {currentView === 'mui-demo' && <MuiDemo />}
+>>>>>>> Stashed changes
         {currentView === 'tasks-original' && <TasksFeature />}
         {currentView === 'tasks-mui' && <TasksFeatureMui />}
       </AppLayout>
