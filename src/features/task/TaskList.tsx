@@ -19,21 +19,21 @@ function TaskList({ tasks, setTasks }: TaskListProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('card');
 
   useEffect(() => {
-    loadTasks();
-  }, []);
+    const loadTasks = async () => {
+      setIsLoading(true);
+      setError('');
+      try {
+        const data = await tasksApi.getTasks();
+        setTasks(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load tasks');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const loadTasks = async () => {
-    setIsLoading(true);
-    setError('');
-    try {
-      const data = await tasksApi.getTasks();
-      setTasks(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load tasks');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    loadTasks();
+  }, [setTasks]);
 
   const handleDelete = async (id: string) => {
     try {
