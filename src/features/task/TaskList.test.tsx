@@ -4,7 +4,6 @@ import TaskList from './TaskList';
 import { tasksApi } from '../../api/tasks';
 import type { Task } from '../../types';
 
-// Mock the tasks API
 vi.mock('../../api/tasks', () => ({
   tasksApi: {
     getTasks: vi.fn(),
@@ -53,12 +52,12 @@ describe('TaskList', () => {
   describe('Loading state', () => {
     it('displays loading state initially', () => {
       vi.mocked(tasksApi.getTasks).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {})
       );
 
       render(<TaskList tasks={[]} setTasks={mockSetTasks} />);
 
-      expect(screen.getByText('Loading tasks...')).toBeInTheDocument();
+      expect(screen.getByRole('progressbar')).toBeInTheDocument();
     });
 
     it('loads tasks on mount', async () => {
@@ -107,7 +106,7 @@ describe('TaskList', () => {
       render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
       expect(screen.getByText('Task 1')).toBeInTheDocument();
@@ -119,7 +118,7 @@ describe('TaskList', () => {
       render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
       const todoButton = screen.getByRole('button', { name: /To Do/i });
@@ -134,7 +133,7 @@ describe('TaskList', () => {
       render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
       const inProgressButton = screen.getByRole('button', {
@@ -151,7 +150,7 @@ describe('TaskList', () => {
       render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
       const doneButton = screen.getByRole('button', { name: /Done/i });
@@ -166,7 +165,7 @@ describe('TaskList', () => {
       render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
       expect(screen.getByText(/All \(3\)/)).toBeInTheDocument();
@@ -182,45 +181,44 @@ describe('TaskList', () => {
     });
 
     it('displays card view by default', async () => {
-      // Render the component before making assertions
       render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
-      const cardRadio = screen.getByDisplayValue('card') as HTMLInputElement;
-      expect(cardRadio.checked).toBe(true);
+      const cardButton = screen.getByRole('button', { name: /card view/i });
+      expect(cardButton).toHaveClass('Mui-selected');
     });
 
-    it('switches to list view when radio is selected', async () => {
+    it('switches to list view when button is clicked', async () => {
       render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
-      const listRadio = screen.getByDisplayValue('list') as HTMLInputElement;
-      fireEvent.click(listRadio);
+      const listButton = screen.getByRole('button', { name: /list view/i });
+      fireEvent.click(listButton);
 
-      expect(listRadio.checked).toBe(true);
+      expect(listButton).toHaveClass('Mui-selected');
     });
 
     it('switches to card view from list view', async () => {
       render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
-      const listRadio = screen.getByDisplayValue('list') as HTMLInputElement;
-      const cardRadio = screen.getByDisplayValue('card') as HTMLInputElement;
+      const listButton = screen.getByRole('button', { name: /list view/i });
+      const cardButton = screen.getByRole('button', { name: /card view/i });
 
-      fireEvent.click(listRadio);
-      expect(listRadio.checked).toBe(true);
+      fireEvent.click(listButton);
+      expect(listButton).toHaveClass('Mui-selected');
 
-      fireEvent.click(cardRadio);
-      expect(cardRadio.checked).toBe(true);
+      fireEvent.click(cardButton);
+      expect(cardButton).toHaveClass('Mui-selected');
     });
   });
 
@@ -233,7 +231,7 @@ describe('TaskList', () => {
       render(<TaskList tasks={[]} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
       expect(screen.getByText('No tasks found')).toBeInTheDocument();
@@ -253,11 +251,10 @@ describe('TaskList', () => {
           createdAt: new Date(),
         },
       ];
-
       render(<TaskList tasks={todoTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
       const doneButton = screen.getByRole('button', { name: /Done/i });
@@ -277,7 +274,7 @@ describe('TaskList', () => {
       render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
       const deleteButtons = screen.getAllByLabelText('Delete task');
@@ -288,7 +285,6 @@ describe('TaskList', () => {
         expect(mockSetTasks).toHaveBeenCalledWith(expect.any(Function));
       });
 
-      // Verify the updater function removes the correct task
       const updaterFunction = mockSetTasks.mock.calls[1][0];
       const result = updaterFunction(mockTasks);
       expect(result).toHaveLength(2);
@@ -298,11 +294,10 @@ describe('TaskList', () => {
     it('displays alert when deletion fails', async () => {
       const errorMessage = 'Delete failed';
       vi.mocked(tasksApi.deleteTask).mockRejectedValue(new Error(errorMessage));
-
       render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
       const deleteButtons = screen.getAllByLabelText('Delete task');
@@ -326,11 +321,13 @@ describe('TaskList', () => {
       render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
-      const statusSelects = screen.getAllByLabelText('Change task status');
-      fireEvent.change(statusSelects[0], { target: { value: 'done' } });
+      const statusSelects = screen.getAllByRole('combobox');
+      fireEvent.mouseDown(statusSelects[0]);
+      const doneOption = await screen.findByRole('option', { name: 'Done' });
+      fireEvent.click(doneOption);
 
       await waitFor(() => {
         expect(tasksApi.updateTask).toHaveBeenCalledWith('1', {
@@ -339,7 +336,6 @@ describe('TaskList', () => {
         expect(mockSetTasks).toHaveBeenCalledWith(expect.any(Function));
       });
 
-      // Verify the updater function updates the correct task
       const updaterFunction = mockSetTasks.mock.calls[1][0];
       const result = updaterFunction(mockTasks);
       const updatedTask = result.find((t: Task) => t.id === '1');
@@ -349,15 +345,16 @@ describe('TaskList', () => {
     it('displays alert when status update fails', async () => {
       const errorMessage = 'Update failed';
       vi.mocked(tasksApi.updateTask).mockRejectedValue(new Error(errorMessage));
-
       render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
-      const statusSelects = screen.getAllByLabelText('Change task status');
-      fireEvent.change(statusSelects[0], { target: { value: 'done' } });
+      const statusSelects = screen.getAllByRole('combobox');
+      fireEvent.mouseDown(statusSelects[0]);
+      const doneOption = await screen.findByRole('option', { name: 'Done' });
+      fireEvent.click(doneOption);
 
       await waitFor(() => {
         expect(window.alert).toHaveBeenCalledWith(
@@ -376,7 +373,7 @@ describe('TaskList', () => {
       render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading tasks...')).not.toBeInTheDocument();
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
 
       const editButtons = screen.getAllByLabelText('Edit task');
