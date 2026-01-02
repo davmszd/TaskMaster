@@ -5,13 +5,31 @@ import type { Task } from '../../types';
 interface TaskFormMuiProps {
   onSubmit: (task: Omit<Task, 'id' | 'createdAt'>) => void;
   onCancel: () => void;
+  initialTask?: Task;
+  isEdit?: boolean;
 }
 
-function TaskForm({ onSubmit, onCancel }: TaskFormMuiProps) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
-  const [dueDate, setDueDate] = useState('');
+function TaskForm({
+  onSubmit,
+  onCancel,
+  initialTask,
+  isEdit = false,
+}: TaskFormMuiProps) {
+  const [title, setTitle] = useState(initialTask?.title || '');
+  const [description, setDescription] = useState(
+    initialTask?.description || ''
+  );
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>(
+    initialTask?.priority || 'medium'
+  );
+  const [status, setStatus] = useState<'todo' | 'in-progress' | 'done'>(
+    initialTask?.status || 'todo'
+  );
+  const [dueDate, setDueDate] = useState(
+    initialTask?.dueDate
+      ? new Date(initialTask.dueDate).toISOString().split('T')[0]
+      : ''
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,15 +40,17 @@ function TaskForm({ onSubmit, onCancel }: TaskFormMuiProps) {
       title: title.trim(),
       description: description.trim(),
       priority,
-      status: 'todo',
-      dueDate: dueDate ? new Date(dueDate) : undefined,
+      status,
+      dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
     });
 
-    // Reset form
-    setTitle('');
-    setDescription('');
-    setPriority('medium');
-    setDueDate('');
+    if (!isEdit) {
+      setTitle('');
+      setDescription('');
+      setPriority('medium');
+      setStatus('todo');
+      setDueDate('');
+    }
   };
 
   return (
@@ -68,6 +88,22 @@ function TaskForm({ onSubmit, onCancel }: TaskFormMuiProps) {
           <MenuItem value="high">High</MenuItem>
         </TextField>
 
+        {isEdit && (
+          <TextField
+            select
+            label="Status"
+            value={status}
+            onChange={(e) =>
+              setStatus(e.target.value as 'todo' | 'in-progress' | 'done')
+            }
+            fullWidth
+          >
+            <MenuItem value="todo">To Do</MenuItem>
+            <MenuItem value="in-progress">In Progress</MenuItem>
+            <MenuItem value="done">Done</MenuItem>
+          </TextField>
+        )}
+
         <TextField
           label="Due Date"
           type="date"
@@ -82,7 +118,7 @@ function TaskForm({ onSubmit, onCancel }: TaskFormMuiProps) {
             Cancel
           </Button>
           <Button type="submit" variant="contained" disabled={!title.trim()}>
-            Create Task
+            {isEdit ? 'Update Task' : 'Create Task'}
           </Button>
         </Stack>
       </Stack>

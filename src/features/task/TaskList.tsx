@@ -21,9 +21,10 @@ type ViewMode = 'list' | 'card';
 type TaskListProps = {
   tasks: Task[];
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  onEditTask?: (taskId: string) => void;
 };
 
-function TaskList({ tasks, setTasks }: TaskListProps) {
+function TaskList({ tasks, setTasks, onEditTask }: TaskListProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState<FilterStatus>('all');
@@ -151,8 +152,7 @@ function TaskList({ tasks, setTasks }: TaskListProps) {
             },
           }}
         >
-          In Progress (
-          {tasks.filter((t) => t.status === 'in-progress').length})
+          In Progress ({tasks.filter((t) => t.status === 'in-progress').length})
         </Button>
         <Button
           variant={filter === 'done' ? 'contained' : 'outlined'}
@@ -186,7 +186,7 @@ function TaskList({ tasks, setTasks }: TaskListProps) {
                 task={task}
                 onDelete={handleDelete}
                 onStatusChange={handleStatusChange}
-                onEdit={(id) => alert(`Edit task ${id}`)}
+                onEdit={onEditTask}
               />
             </Grid>
           ))}
@@ -199,7 +199,7 @@ function TaskList({ tasks, setTasks }: TaskListProps) {
               task={task}
               onDelete={handleDelete}
               onStatusChange={handleStatusChange}
-              onEdit={(id) => alert(`Edit task ${id}`)}
+              onEdit={onEditTask}
               showActions={true}
             />
           ))}
