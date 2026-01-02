@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { ThemeContext, type Theme } from './ThemeContext.context';
-import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
+import {
+  ThemeProvider as MuiThemeProvider,
+  createTheme,
+} from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
