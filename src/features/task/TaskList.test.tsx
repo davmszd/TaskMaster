@@ -19,8 +19,8 @@ const mockTasks: Task[] = [
     description: 'Description 1',
     status: 'todo',
     priority: 'high',
-    createdAt: new Date('2024-01-01'),
-    dueDate: new Date('2024-12-31'),
+    createdAt: new Date('2024-01-01').toISOString(),
+    dueDate: new Date('2024-12-31').toISOString(),
   },
   {
     id: '2',
@@ -28,7 +28,7 @@ const mockTasks: Task[] = [
     description: 'Description 2',
     status: 'in-progress',
     priority: 'medium',
-    createdAt: new Date('2024-01-02'),
+    createdAt: new Date('2024-01-02').toISOString(),
   },
   {
     id: '3',
@@ -36,7 +36,7 @@ const mockTasks: Task[] = [
     description: 'Description 3',
     status: 'done',
     priority: 'low',
-    createdAt: new Date('2024-01-03'),
+    createdAt: new Date('2024-01-03').toISOString(),
   },
 ];
 
@@ -248,7 +248,7 @@ describe('TaskList', () => {
           description: 'Description 1',
           status: 'todo',
           priority: 'high',
-          createdAt: new Date(),
+          createdAt: new Date().toISOString(),
         },
       ];
       render(<TaskList tasks={todoTasks} setTasks={mockSetTasks} />);
@@ -369,8 +369,15 @@ describe('TaskList', () => {
       vi.mocked(tasksApi.getTasks).mockResolvedValue([]);
     });
 
-    it('shows alert when edit button is clicked', async () => {
-      render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
+    it('calls onEditTask when edit button is clicked', async () => {
+      const mockEditTask = vi.fn();
+      render(
+        <TaskList
+          tasks={mockTasks}
+          setTasks={mockSetTasks}
+          onEditTask={mockEditTask}
+        />
+      );
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -379,7 +386,7 @@ describe('TaskList', () => {
       const editButtons = screen.getAllByLabelText('Edit task');
       fireEvent.click(editButtons[0]);
 
-      expect(window.alert).toHaveBeenCalledWith('Edit task 1');
+      expect(mockEditTask).toHaveBeenCalledWith('1');
     });
   });
 });
