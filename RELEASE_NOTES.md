@@ -1,6 +1,15 @@
 # Release Notes
 
+## 0.0.12
+
+### Internal
+
+### Features
+
+### Fixes
+
 ## 0.0.11
+### Released on 2026-01-02
 
 ### Internal
 
