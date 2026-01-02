@@ -9,7 +9,7 @@ let mockTasks: Task[] = [
     description: 'Create folders and configure TypeScript',
     status: 'done',
     priority: 'high',
-    createdAt: new Date('2024-01-01'),
+    createdAt: new Date('2024-01-01').toISOString(),
   },
   {
     id: '2',
@@ -17,7 +17,7 @@ let mockTasks: Task[] = [
     description: 'Create CRUD operations for tasks',
     status: 'in-progress',
     priority: 'high',
-    createdAt: new Date('2024-01-02'),
+    createdAt: new Date('2024-01-02').toISOString(),
   },
   {
     id: '3',
@@ -25,7 +25,7 @@ let mockTasks: Task[] = [
     description: 'Implement user login',
     status: 'todo',
     priority: 'medium',
-    createdAt: new Date('2024-01-03'),
+    createdAt: new Date('2024-01-03').toISOString(),
   },
 ];
 
@@ -45,7 +45,7 @@ export const tasksApi = {
     const newTask: Task = {
       ...task,
       id: Date.now().toString(),
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
     };
     mockTasks.push(newTask);
     return newTask;
