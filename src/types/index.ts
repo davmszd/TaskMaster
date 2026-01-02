@@ -11,6 +11,6 @@ export type Task = {
   description: string;
   status: 'todo' | 'in-progress' | 'done';
   priority: 'low' | 'medium' | 'high';
-  createdAt: Date;
-  dueDate?: Date;
+  createdAt: string;
+  dueDate?: string;
 };

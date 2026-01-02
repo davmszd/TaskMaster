@@ -10,8 +10,8 @@ const mockTask: Task = {
   description: 'This is a test task description',
   status: 'todo',
   priority: 'high',
-  createdAt: new Date('2024-01-01'),
-  dueDate: new Date('2024-12-31'),
+  createdAt: new Date('2024-01-01').toISOString(),
+  dueDate: new Date('2024-12-31').toISOString(),
 };
 
 describe('TaskCard', () => {
@@ -82,7 +82,9 @@ describe('TaskCard', () => {
     const completedTask = { ...mockTask, status: 'done' as const };
     const { container } = render(<TaskCard task={completedTask} />);
 
-    const card = container.querySelector('[class*="MuiCard-root"]') as HTMLElement;
+    const card = container.querySelector(
+      '[class*="MuiCard-root"]'
+    ) as HTMLElement;
     const cardStyle = window.getComputedStyle(card);
 
     expect(card).toBeInTheDocument();
@@ -96,12 +98,31 @@ describe('TaskCard', () => {
       description: '',
       status: 'todo',
       priority: 'low',
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
     };
 
     render(<TaskCard task={minimalTask} />);
 
     expect(screen.getByText('Minimal Task')).toBeInTheDocument();
     expect(screen.queryByText('Due')).not.toBeInTheDocument();
+  });
+
+  it('renders dates correctly from ISO strings', () => {
+    const taskWithDates: Task = {
+      id: '3',
+      title: 'Task with Dates',
+      description: 'Testing date rendering',
+      status: 'todo',
+      priority: 'medium',
+      createdAt: new Date('2024-01-15').toISOString(),
+      dueDate: new Date('2024-12-25').toISOString(),
+    };
+
+    render(<TaskCard task={taskWithDates} />);
+
+    expect(screen.getByText('Task with Dates')).toBeInTheDocument();
+    expect(screen.getByText(/Created/)).toBeInTheDocument();
+    expect(screen.getByText(/Due/)).toBeInTheDocument();
+    expect(screen.getByText(/Dec 25, 2024/)).toBeInTheDocument();
   });
 });
