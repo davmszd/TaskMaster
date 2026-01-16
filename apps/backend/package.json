@@ -1,0 +1,17 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nitro dev",
+    "build": "nitro build",
+    "preview": "node .output/server/index.mjs"
+  },
+  "dependencies": {
+    "@monorepo/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "nitropack": "^2.13.1",
+    "typescript": "~5.9.3"
+  }
+}

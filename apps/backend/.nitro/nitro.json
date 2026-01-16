@@ -1,0 +1,17 @@
+{
+  "date": "2026-01-16T22:21:59.839Z",
+  "preset": "nitro-dev",
+  "framework": {
+    "name": "nitro",
+    "version": ""
+  },
+  "versions": {
+    "nitro": "2.13.1"
+  },
+  "dev": {
+    "pid": 41380,
+    "workerAddress": {
+      "socketPath": "\\\\.\\pipe\\nitro-worker-41380-2-2-5144.sock"
+    }
+  }
+}

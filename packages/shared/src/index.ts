@@ -7,3 +7,6 @@ export type Task = {
   createdAt: string;
   dueDate?: string;
 };
+
+export type CreateTaskInput = Omit<Task, 'id' | 'createdAt'>;
+export type UpdateTaskInput = Partial<Omit<Task, 'id' | 'createdAt'>>;
