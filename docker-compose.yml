@@ -1,0 +1,29 @@
+
+services:
+  # Development service
+  react-app-dev:
+    build:
+      context: .
+      target: development
+    container_name: react-app-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true
+
+  # Production service
+  react-app-prod:
+    build:
+      context: .
+      target: production
+    container_name: react-app-prod
+    ports:
+      - "8080:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
