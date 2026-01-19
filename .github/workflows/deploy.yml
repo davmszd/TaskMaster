@@ -38,24 +38,24 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    
+
     steps:
       - name: Validate run_id is from main branch
         run: |
           # Get the workflow run information
           RUN_INFO=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.inputs.run_id }}")
-          
+
           # Extract the branch name
           BRANCH=$(echo "$RUN_INFO" | jq -r '.head_branch')
-          
+
           # Check if the API call was successful
           if [ "$BRANCH" = "null" ] || [ -z "$BRANCH" ]; then
             echo "Error: Could not fetch workflow run information for run_id ${{ github.event.inputs.run_id }}"
             echo "Please verify the run_id is correct and from this repository."
             exit 1
           fi
-          
+
           # Validate it's from main branch
           if [ "$BRANCH" != "main" ]; then
             echo "Error: Deployment rejected!"
@@ -65,25 +65,25 @@ jobs:
             echo "Please use a run_id from a build that ran on the main branch."
             exit 1
           fi
-          
+
           echo "Validation passed: Run ID ${{ github.event.inputs.run_id }} is from main branch"
-      
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Read and increment version
         id: version
         run: |
           # Read current version
-          CURRENT_VERSION=$(cat version.json | grep -oP '(?<="version": ")[^"]*')
+          CURRENT_VERSION=$(cat web-client/version.json | grep -oP '(?<="version": ")[^"]*')
           echo "Current version: $CURRENT_VERSION"
-          
+
           # Split version into parts
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-          
+
           # Increment based on input
           INCREMENT="${{ github.event.inputs.increment }}"
           if [ "$INCREMENT" = "major" ]; then
@@ -96,30 +96,30 @@ jobs:
           else
             PATCH=$((PATCH + 1))
           fi
-          
+
           # Create new version
           NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
           echo "New version: $NEW_VERSION"
-          
+
           # Calculate next version (for release notes)
           NEXT_PATCH=$((PATCH + 1))
           NEXT_VERSION="${MAJOR}.${MINOR}.${NEXT_PATCH}"
-          
+
           # Save to output
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "tag=v$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
-      
+
       - name: Update release notes
         run: |
           # Get current date
           RELEASE_DATE=$(date '+%Y-%m-%d')
           RELEASE_VERSION="${{ steps.version.outputs.version }}"
           NEXT_VERSION="${{ steps.version.outputs.next_version }}"
-          
+
           # Create temporary file
           TEMP_FILE=$(mktemp)
-          
+
           # Process RELEASE_NOTES.md
           awk -v next_version="$NEXT_VERSION" -v release_version="$RELEASE_VERSION" -v released_on="$RELEASE_DATE" '
             BEGIN { found = 0 }
@@ -137,28 +137,28 @@ jobs:
               print
             }
           ' RELEASE_NOTES.md > "$TEMP_FILE"
-          
+
           # Replace original file
           mv "$TEMP_FILE" RELEASE_NOTES.md
-          
+
           echo "Release notes updated successfully"
-      
+
       - name: Update version.json and commit changes
         run: |
-          echo "{\"version\": \"${{ steps.version.outputs.version }}\"}" > version.json
+          echo "{\"version\": \"${{ steps.version.outputs.version }}\"}" > web-client/version.json
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add version.json RELEASE_NOTES.md
-          git commit -m "chore: bump version to ${{ steps.version.outputs.version }} and update release notes"
+          git add web-client/version.json
+          git commit -m "chore: bump version to ${{ steps.version.outputs.version }}"
           git push origin HEAD:main
-      
+
       - name: Create and push tag
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag -a "${{ steps.version.outputs.tag }}" -m "Release ${{ steps.version.outputs.tag }}"
           git push origin "${{ steps.version.outputs.tag }}"
-      
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
@@ -166,13 +166,13 @@ jobs:
           path: dist/
           run-id: ${{ github.event.inputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Extract release notes for this version
         id: extract_notes
         run: |
           # Extract the section for the current version from RELEASE_NOTES.md
           VERSION="${{ steps.version.outputs.version }}"
-          
+
           # Use awk to extract content between version headers
           NOTES=$(awk -v version="$VERSION" '
             /^## [0-9]+\.[0-9]+\.[0-9]+/ {
@@ -185,14 +185,14 @@ jobs:
             }
             found { print }
           ' RELEASE_NOTES.md)
-          
+
           # Save to output using heredoc to handle multiline
           {
             echo 'notes<<EOF'
             echo "$NOTES"
             echo 'EOF'
           } >> $GITHUB_OUTPUT
-      
+
       - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
@@ -202,23 +202,23 @@ jobs:
           release_name: Release ${{ steps.version.outputs.tag }}
           body: |
             ## Release ${{ steps.version.outputs.tag }}
-            
+
             ${{ steps.extract_notes.outputs.notes }}
-            
+
             ---
-            
+
             **User Notes**: ${{ github.event.inputs.release_notes }}
             **Increment Type**: ${{ github.event.inputs.increment }}
             **Build Run ID**: ${{ github.event.inputs.run_id }}
             **Deployed**: ${{ github.event.repository.name }}
           draft: false
           prerelease: false
-      
+
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist/
-      
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

@@ -4,6 +4,7 @@ import { Add as AddIcon } from '@mui/icons-material';
 import TaskList from './TaskList';
 import type { Task } from '../../types';
 import TaskForm from './TaskForm.tsx';
+import { tasksApi } from '../../api/TaskServiceFactory.ts';
 
 function TasksFeature() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -11,32 +12,31 @@ function TasksFeature() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const handleAddTask = (taskData: Omit<Task, 'id' | 'createdAt'>) => {
-    const newTask: Task = {
-      ...taskData,
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-    };
-    setTasks((prev) => [newTask, ...prev]);
-    setIsCreateModalOpen(false);
+  const handleAddTask = async (taskData: Omit<Task, 'id' | 'createdAt'>) => {
+    try {
+      const newTask = await tasksApi.createTask(taskData);
+      setTasks((prev) => [newTask, ...prev]);
+      setIsCreateModalOpen(false);
+    } catch (error) {
+      console.error('Error creating task:', error);
+      // TODO: Show error message to user
+    }
   };
 
-  const handleEditTask = (taskData: Omit<Task, 'id' | 'createdAt'>) => {
+  const handleEditTask = async (taskData: Omit<Task, 'id' | 'createdAt'>) => {
     if (!editingTask) return;
 
-    const updatedTask = {
-      ...editingTask,
-      ...taskData,
-      dueDate: taskData.dueDate
-        ? new Date(taskData.dueDate).toISOString()
-        : undefined,
-    };
-
-    setTasks((prev) =>
-      prev.map((task) => (task.id === editingTask.id ? updatedTask : task))
-    );
-    setIsEditModalOpen(false);
-    setEditingTask(null);
+    try {
+      const updatedTask = await tasksApi.updateTask(editingTask.id, taskData);
+      setTasks((prev) =>
+        prev.map((task) => (task.id === editingTask.id ? updatedTask : task))
+      );
+      setIsEditModalOpen(false);
+      setEditingTask(null);
+    } catch (error) {
+      console.error('Error updating task:', error);
+      // TODO: Show error message to user
+    }
   };
 
   const openEditModal = (taskId: string) => {
