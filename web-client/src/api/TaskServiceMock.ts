@@ -1,5 +1,6 @@
 import type { ITaskService } from './ITaskService.ts';
 import type { Task } from '../types';
+import { TaskStatus, TaskPriority } from '../types';
 
 export class TaskServiceMock implements ITaskService {
   private delay = (ms: number) =>
@@ -10,24 +11,24 @@ export class TaskServiceMock implements ITaskService {
       id: '1',
       title: 'Set up project structure',
       description: 'Create folders and configure TypeScript',
-      status: 'done',
-      priority: 'high',
+      status: TaskStatus.Done,
+      priority: TaskPriority.High,
       createdAt: new Date(2025, 11, 1).toISOString(),
     },
     {
       id: '2',
       title: 'Build task manager',
       description: 'Create CRUD operations for tasks',
-      status: 'done',
-      priority: 'high',
+      status: TaskStatus.Done,
+      priority: TaskPriority.High,
       createdAt: new Date(2025, 11, 5).toISOString(),
     },
     {
       id: '3',
       title: 'Add authentication',
       description: 'Implement user login and JWT token handling',
-      status: 'in-progress',
-      priority: 'high',
+      status: TaskStatus.InProgress,
+      priority: TaskPriority.High,
       createdAt: new Date(2026, 0, 2).toISOString(),
       dueDate: new Date(2026, 0, 25).toISOString(),
     },
@@ -35,8 +36,8 @@ export class TaskServiceMock implements ITaskService {
       id: '4',
       title: 'Design database schema',
       description: 'Create Entity Framework models and migrations',
-      status: 'in-progress',
-      priority: 'high',
+      status: TaskStatus.InProgress,
+      priority: TaskPriority.High,
       createdAt: new Date(2026, 0, 3).toISOString(),
       dueDate: new Date(2026, 0, 20).toISOString(),
     },
@@ -45,8 +46,8 @@ export class TaskServiceMock implements ITaskService {
       title: 'Implement user profile page',
       description:
         'Add page for users to view and edit their profile information',
-      status: 'todo',
-      priority: 'medium',
+      status: TaskStatus.Todo,
+      priority: TaskPriority.Medium,
       createdAt: new Date(2026, 0, 5).toISOString(),
       dueDate: new Date(2026, 0, 30).toISOString(),
     },

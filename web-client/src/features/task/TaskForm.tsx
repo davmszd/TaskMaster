@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Box, TextField, Button, Stack, MenuItem } from '@mui/material';
 import type { Task } from '../../types';
+import { TaskStatus, TaskPriority } from '../../types';
 
 interface TaskFormMuiProps {
   onSubmit: (task: Omit<Task, 'id' | 'createdAt'>) => void;
@@ -19,11 +20,11 @@ function TaskForm({
   const [description, setDescription] = useState(
     initialTask?.description || ''
   );
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>(
-    initialTask?.priority || 'medium'
+  const [priority, setPriority] = useState<TaskPriority>(
+    initialTask?.priority ?? TaskPriority.Medium
   );
-  const [status, setStatus] = useState<'todo' | 'in-progress' | 'done'>(
-    initialTask?.status || 'todo'
+  const [status, setStatus] = useState<TaskStatus>(
+    initialTask?.status ?? TaskStatus.Todo
   );
   const [dueDate, setDueDate] = useState(
     initialTask?.dueDate
@@ -47,8 +48,8 @@ function TaskForm({
     if (!isEdit) {
       setTitle('');
       setDescription('');
-      setPriority('medium');
-      setStatus('todo');
+      setPriority(TaskPriority.Medium);
+      setStatus(TaskStatus.Todo);
       setDueDate('');
     }
   };
@@ -79,13 +80,13 @@ function TaskForm({
           label="Priority"
           value={priority}
           onChange={(e) =>
-            setPriority(e.target.value as 'low' | 'medium' | 'high')
+            setPriority(parseInt(e.target.value) as TaskPriority)
           }
           fullWidth
         >
-          <MenuItem value="low">Low</MenuItem>
-          <MenuItem value="medium">Medium</MenuItem>
-          <MenuItem value="high">High</MenuItem>
+          <MenuItem value={TaskPriority.Low}>Low</MenuItem>
+          <MenuItem value={TaskPriority.Medium}>Medium</MenuItem>
+          <MenuItem value={TaskPriority.High}>High</MenuItem>
         </TextField>
 
         {isEdit && (
@@ -94,13 +95,13 @@ function TaskForm({
             label="Status"
             value={status}
             onChange={(e) =>
-              setStatus(e.target.value as 'todo' | 'in-progress' | 'done')
+              setStatus(parseInt(e.target.value) as TaskStatus)
             }
             fullWidth
           >
-            <MenuItem value="todo">To Do</MenuItem>
-            <MenuItem value="in-progress">In Progress</MenuItem>
-            <MenuItem value="done">Done</MenuItem>
+            <MenuItem value={TaskStatus.Todo}>To Do</MenuItem>
+            <MenuItem value={TaskStatus.InProgress}>In Progress</MenuItem>
+            <MenuItem value={TaskStatus.Done}>Done</MenuItem>
           </TextField>
         )}
 

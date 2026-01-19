@@ -3,13 +3,14 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TaskCard from './TaskCard';
 import type { Task } from '../../types';
+import { TaskStatus, TaskPriority } from '../../types';
 
 const mockTask: Task = {
   id: '1',
   title: 'Test Task',
   description: 'This is a test task description',
-  status: 'todo',
-  priority: 'high',
+  status: TaskStatus.Todo,
+  priority: TaskPriority.High,
   createdAt: new Date('2024-01-01').toISOString(),
   dueDate: new Date('2024-12-31').toISOString(),
 };
@@ -22,7 +23,7 @@ describe('TaskCard', () => {
     expect(
       screen.getByText('This is a test task description')
     ).toBeInTheDocument();
-    expect(screen.getByText('high')).toBeInTheDocument();
+    expect(screen.getByText('HIGH')).toBeInTheDocument();
   });
 
   it('calls onDelete when delete button is clicked', () => {
@@ -50,7 +51,7 @@ describe('TaskCard', () => {
     const doneOption = screen.getByRole('option', { name: 'Done' });
     await user.click(doneOption);
 
-    expect(mockStatusChange).toHaveBeenCalledWith('1', 'done');
+    expect(mockStatusChange).toHaveBeenCalledWith('1', TaskStatus.Done);
   });
 
   it('calls onEdit when edit button is clicked', () => {
@@ -79,7 +80,7 @@ describe('TaskCard', () => {
   });
 
   it('applies completed style when task is done', () => {
-    const completedTask = { ...mockTask, status: 'done' as const };
+    const completedTask = { ...mockTask, status: TaskStatus.Done };
     const { container } = render(<TaskCard task={completedTask} />);
 
     const card = container.querySelector(
@@ -96,8 +97,8 @@ describe('TaskCard', () => {
       id: '2',
       title: 'Minimal Task',
       description: '',
-      status: 'todo',
-      priority: 'low',
+      status: TaskStatus.Todo,
+      priority: TaskPriority.Low,
       createdAt: new Date().toISOString(),
     };
 
@@ -112,8 +113,8 @@ describe('TaskCard', () => {
       id: '3',
       title: 'Task with Dates',
       description: 'Testing date rendering',
-      status: 'todo',
-      priority: 'medium',
+      status: TaskStatus.Todo,
+      priority: TaskPriority.Medium,
       createdAt: new Date('2024-01-15').toISOString(),
       dueDate: new Date('2024-12-25').toISOString(),
     };
