@@ -5,6 +5,7 @@
 ### Internal
 
 ### Features
+- Add backend project for tasks management
 
 ### Fixes
 
