@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { tasksApi } from '../../api/tasks';
+import { tasksApi } from '../../api/TaskServiceFactory.ts';
 import type { Task } from '../../types';
 import TaskCard from './TaskCard';
 import {

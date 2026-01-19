@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import TaskList from './TaskList';
-import { tasksApi } from '../../api/tasks';
+import { tasksApi } from '../../api/TaskServiceFactory.ts';
 import type { Task } from '../../types';
 
 vi.mock('../../api/tasks', () => ({
