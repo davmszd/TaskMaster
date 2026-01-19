@@ -1,4 +1,5 @@
 import type { Task } from '../../types';
+import { TaskStatus, TaskPriority, statusToString, priorityToString } from '../../types';
 import { getRelativeTime, formatDate } from '../../utils/date';
 import {
   Card,
@@ -22,7 +23,7 @@ import {
 type TaskCardProps = {
   task: Task;
   onDelete?: (id: string) => void;
-  onStatusChange?: (id: string, status: Task['status']) => void;
+  onStatusChange?: (id: string, status: TaskStatus) => void;
   onEdit?: (id: string) => void;
   showActions?: boolean;
 };
@@ -35,7 +36,7 @@ function TaskCard({
   showActions = true,
 }: TaskCardProps) {
   const getPriorityColor = (
-    priority: string
+    priority: TaskPriority
   ):
     | 'default'
     | 'primary'
@@ -45,11 +46,11 @@ function TaskCard({
     | 'success'
     | 'warning' => {
     switch (priority) {
-      case 'low':
+      case TaskPriority.Low:
         return 'success';
-      case 'medium':
+      case TaskPriority.Medium:
         return 'warning';
-      case 'high':
+      case TaskPriority.High:
         return 'error';
       default:
         return 'default';
@@ -57,7 +58,7 @@ function TaskCard({
   };
 
   const getStatusColor = (
-    status: string
+    status: TaskStatus
   ):
     | 'default'
     | 'primary'
@@ -67,11 +68,11 @@ function TaskCard({
     | 'success'
     | 'warning' => {
     switch (status) {
-      case 'todo':
+      case TaskStatus.Todo:
         return 'default';
-      case 'in-progress':
+      case TaskStatus.InProgress:
         return 'info';
-      case 'done':
+      case TaskStatus.Done:
         return 'success';
       default:
         return 'default';
@@ -84,7 +85,7 @@ function TaskCard({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        opacity: task.status === 'done' ? 0.7 : 1,
+        opacity: task.status === TaskStatus.Done ? 0.7 : 1,
       }}
     >
       <CardContent sx={{ flexGrow: 1 }}>
@@ -103,15 +104,15 @@ function TaskCard({
 
         <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
           <Chip
-            label={task.priority}
+            label={priorityToString(task.priority).toUpperCase()}
             color={getPriorityColor(task.priority)}
             size="small"
           />
           <Chip
             label={
-              task.status === 'in-progress'
+              task.status === TaskStatus.InProgress
                 ? 'In Progress'
-                : task.status.toUpperCase()
+                : statusToString(task.status).toUpperCase()
             }
             color={getStatusColor(task.status)}
             size="small"
@@ -149,14 +150,14 @@ function TaskCard({
               size="small"
               value={task.status}
               onChange={(e) =>
-                onStatusChange(task.id, e.target.value as Task['status'])
+                onStatusChange(task.id, parseInt(e.target.value) as TaskStatus)
               }
               sx={{ minWidth: 120 }}
               aria-label="Change task status"
             >
-              <MenuItem value="todo">To Do</MenuItem>
-              <MenuItem value="in-progress">In Progress</MenuItem>
-              <MenuItem value="done">Done</MenuItem>
+              <MenuItem value={TaskStatus.Todo}>To Do</MenuItem>
+              <MenuItem value={TaskStatus.InProgress}>In Progress</MenuItem>
+              <MenuItem value={TaskStatus.Done}>Done</MenuItem>
             </Select>
           )}
 

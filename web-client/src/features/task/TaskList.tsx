@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { tasksApi } from '../../api/TaskServiceFactory.ts';
 import type { Task } from '../../types';
+import { TaskStatus } from '../../types';
 import TaskCard from './TaskCard';
 import {
   Box,
@@ -15,7 +16,7 @@ import {
 import { ViewList, ViewModule } from '@mui/icons-material';
 import Grid from '@mui/material/Grid';
 
-type FilterStatus = 'all' | Task['status'];
+type FilterStatus = 'all' | TaskStatus;
 type ViewMode = 'list' | 'card';
 
 type TaskListProps = {
@@ -56,7 +57,7 @@ function TaskList({ tasks, setTasks, onEditTask }: TaskListProps) {
     }
   };
 
-  const handleStatusChange = async (id: string, status: Task['status']) => {
+  const handleStatusChange = async (id: string, status: TaskStatus) => {
     try {
       await tasksApi.updateTask(id, { status });
       setTasks((prev) =>
@@ -129,8 +130,8 @@ function TaskList({ tasks, setTasks, onEditTask }: TaskListProps) {
           All ({tasks.length})
         </Button>
         <Button
-          variant={filter === 'todo' ? 'contained' : 'outlined'}
-          onClick={() => setFilter('todo')}
+          variant={filter === TaskStatus.Todo ? 'contained' : 'outlined'}
+          onClick={() => setFilter(TaskStatus.Todo)}
           sx={{
             borderRadius: '8px',
             borderWidth: '2px',
@@ -139,11 +140,11 @@ function TaskList({ tasks, setTasks, onEditTask }: TaskListProps) {
             },
           }}
         >
-          To Do ({tasks.filter((t) => t.status === 'todo').length})
+          To Do ({tasks.filter((t) => t.status === TaskStatus.Todo).length})
         </Button>
         <Button
-          variant={filter === 'in-progress' ? 'contained' : 'outlined'}
-          onClick={() => setFilter('in-progress')}
+          variant={filter === TaskStatus.InProgress ? 'contained' : 'outlined'}
+          onClick={() => setFilter(TaskStatus.InProgress)}
           sx={{
             borderRadius: '8px',
             borderWidth: '2px',
@@ -152,11 +153,11 @@ function TaskList({ tasks, setTasks, onEditTask }: TaskListProps) {
             },
           }}
         >
-          In Progress ({tasks.filter((t) => t.status === 'in-progress').length})
+          In Progress ({tasks.filter((t) => t.status === TaskStatus.InProgress).length})
         </Button>
         <Button
-          variant={filter === 'done' ? 'contained' : 'outlined'}
-          onClick={() => setFilter('done')}
+          variant={filter === TaskStatus.Done ? 'contained' : 'outlined'}
+          onClick={() => setFilter(TaskStatus.Done)}
           sx={{
             borderRadius: '8px',
             borderWidth: '2px',
@@ -165,7 +166,7 @@ function TaskList({ tasks, setTasks, onEditTask }: TaskListProps) {
             },
           }}
         >
-          Done ({tasks.filter((t) => t.status === 'done').length})
+          Done ({tasks.filter((t) => t.status === TaskStatus.Done).length})
         </Button>
       </Box>
 
