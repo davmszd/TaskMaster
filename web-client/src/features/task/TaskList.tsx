@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { ViewList, ViewModule } from '@mui/icons-material';
 import Grid from '@mui/material/Grid';
+import { useNotification } from '../../contexts/NotificationContext';
 
 type FilterStatus = 'all' | TaskStatus;
 type ViewMode = 'list' | 'card';
@@ -30,6 +31,7 @@ function TaskList({ tasks, setTasks, onEditTask }: TaskListProps) {
   const [error, setError] = useState('');
   const [filter, setFilter] = useState<FilterStatus>('all');
   const [viewMode, setViewMode] = useState<ViewMode>('card');
+  const { showSuccess, showError } = useNotification();
 
   useEffect(() => {
     const loadTasks = async () => {
@@ -52,8 +54,9 @@ function TaskList({ tasks, setTasks, onEditTask }: TaskListProps) {
     try {
       await tasksApi.deleteTask(id);
       setTasks((prev) => prev.filter((task) => task.id !== id));
+      showSuccess(`Task deleted successfully!`);
     } catch (err) {
-      alert(`Failed to delete task ${err}`);
+      showError( `Failed to delete task: ${err}` );
     }
   };
 
@@ -63,8 +66,9 @@ function TaskList({ tasks, setTasks, onEditTask }: TaskListProps) {
       setTasks((prev) =>
         prev.map((task) => (task.id === id ? { ...task, status } : task))
       );
+      showSuccess(`Task updated successfully!`);
     } catch (err) {
-      alert(`Failed to update task ${err}`);
+      showError( `Failed to update task: ${err}` );
     }
   };
 
