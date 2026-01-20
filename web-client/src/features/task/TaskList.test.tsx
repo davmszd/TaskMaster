@@ -3,6 +3,7 @@ import {fireEvent, render, screen, waitFor} from '@testing-library/react';
 import TaskList from './TaskList';
 import {tasksApi} from '../../api/TaskServiceFactory';
 import {type Task, TaskPriority, TaskStatus} from '../../types';
+import { NotificationProvider } from '../../contexts/NotificationContext';
 
 vi.mock('../../api/TaskServiceFactory', () => ({
   tasksApi: {
@@ -11,6 +12,16 @@ vi.mock('../../api/TaskServiceFactory', () => ({
     updateTask: vi.fn(),
   },
 }));
+
+// Wrapper component to provide NotificationContext
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  <NotificationProvider>{children}</NotificationProvider>
+);
+
+// Helper to render with NotificationProvider
+const renderWithProvider = (ui: React.ReactElement) => {
+  return render(ui, { wrapper: TestWrapper });
+};
 
 const mockTasks: Task[] = [
   {
@@ -55,7 +66,7 @@ describe('TaskList', () => {
         () => new Promise(() => {})
       );
 
-      render(<TaskList tasks={[]} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={[]} setTasks={mockSetTasks} />);
 
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
     });
@@ -63,7 +74,7 @@ describe('TaskList', () => {
     it('loads tasks on mount', async () => {
       vi.mocked(tasksApi.getTasks).mockResolvedValue(mockTasks);
 
-      render(<TaskList tasks={[]} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={[]} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(tasksApi.getTasks).toHaveBeenCalledTimes(1);
@@ -77,7 +88,7 @@ describe('TaskList', () => {
       const errorMessage = 'Network error';
       vi.mocked(tasksApi.getTasks).mockRejectedValue(new Error(errorMessage));
 
-      render(<TaskList tasks={[]} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={[]} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.getByText(`Error: ${errorMessage}`)).toBeInTheDocument();
@@ -87,7 +98,7 @@ describe('TaskList', () => {
     it('handles non-Error objects in catch', async () => {
       vi.mocked(tasksApi.getTasks).mockRejectedValue('String error');
 
-      render(<TaskList tasks={[]} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={[]} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(
@@ -103,7 +114,7 @@ describe('TaskList', () => {
     });
 
     it('displays all tasks by default', async () => {
-      render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -115,7 +126,7 @@ describe('TaskList', () => {
     });
 
     it('filters tasks by todo status', async () => {
-      render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -130,7 +141,7 @@ describe('TaskList', () => {
     });
 
     it('filters tasks by in-progress status', async () => {
-      render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -147,7 +158,7 @@ describe('TaskList', () => {
     });
 
     it('filters tasks by done status', async () => {
-      render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -162,7 +173,7 @@ describe('TaskList', () => {
     });
 
     it('displays task counts for each filter', async () => {
-      render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -181,7 +192,7 @@ describe('TaskList', () => {
     });
 
     it('displays card view by default', async () => {
-      render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -192,7 +203,7 @@ describe('TaskList', () => {
     });
 
     it('switches to list view when button is clicked', async () => {
-      render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -205,7 +216,7 @@ describe('TaskList', () => {
     });
 
     it('switches to card view from list view', async () => {
-      render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -228,7 +239,7 @@ describe('TaskList', () => {
     });
 
     it('displays empty state when no tasks exist', async () => {
-      render(<TaskList tasks={[]} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={[]} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -251,7 +262,7 @@ describe('TaskList', () => {
           createdAt: new Date().toISOString(),
         },
       ];
-      render(<TaskList tasks={todoTasks} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={todoTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -271,7 +282,7 @@ describe('TaskList', () => {
     });
 
     it('deletes a task successfully', async () => {
-      render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -294,7 +305,7 @@ describe('TaskList', () => {
     it('displays alert when deletion fails', async () => {
       const errorMessage = 'Delete failed';
       vi.mocked(tasksApi.deleteTask).mockRejectedValue(new Error(errorMessage));
-      render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -303,10 +314,9 @@ describe('TaskList', () => {
       const deleteButtons = screen.getAllByLabelText('Delete task');
       fireEvent.click(deleteButtons[0]);
 
+      // Check that the error notification appears
       await waitFor(() => {
-        expect(window.alert).toHaveBeenCalledWith(
-          expect.stringContaining('Failed to delete task')
-        );
+        expect(screen.getByText(/Failed to delete task/i)).toBeInTheDocument();
       });
     });
   });
@@ -322,7 +332,7 @@ describe('TaskList', () => {
     });
 
     it('updates task status successfully', async () => {
-      render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -359,7 +369,7 @@ describe('TaskList', () => {
     it('displays alert when status update fails', async () => {
       const errorMessage = 'Update failed';
       vi.mocked(tasksApi.updateTask).mockRejectedValue(new Error(errorMessage));
-      render(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
+      renderWithProvider(<TaskList tasks={mockTasks} setTasks={mockSetTasks} />);
 
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -395,7 +405,7 @@ describe('TaskList', () => {
 
     it('calls onEditTask when edit button is clicked', async () => {
       const mockEditTask = vi.fn();
-      render(
+      renderWithProvider(
         <TaskList
           tasks={mockTasks}
           setTasks={mockSetTasks}
