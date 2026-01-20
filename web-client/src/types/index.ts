@@ -1,14 +1,19 @@
-export const enum TaskStatus {
-  Todo = 0,
-  InProgress = 1,
-  Done = 2
-}
+// Enum-like objects matching backend C# enums (using const objects instead of enums for erasableSyntaxOnly compatibility)
+export const TaskStatus = {
+  Todo: 0,
+  InProgress: 1,
+  Done: 2
+} as const;
 
-export const enum TaskPriority {
-  Low = 0,
-  Medium = 1,
-  High = 2
-}
+export type TaskStatus = typeof TaskStatus[keyof typeof TaskStatus];
+
+export const TaskPriority = {
+  Low: 0,
+  Medium: 1,
+  High: 2
+} as const;
+
+export type TaskPriority = typeof TaskPriority[keyof typeof TaskPriority];
 
 export type Task = {
   id: string;
