@@ -5,26 +5,32 @@ import TaskList from './TaskList';
 import type { Task } from '../../types';
 import TaskForm from './TaskForm.tsx';
 import { tasksApi } from '../../api/TaskServiceFactory.ts';
+import { useNotification } from '../../contexts/NotificationContext';
 
 function TasksFeature() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const { showSuccess, showError } = useNotification();
 
   const handleAddTask = async (taskData: Omit<Task, 'id' | 'createdAt'>) => {
     try {
       const newTask = await tasksApi.createTask(taskData);
       setTasks((prev) => [newTask, ...prev]);
       setIsCreateModalOpen(false);
+      showSuccess('Task added successfully!');
     } catch (error) {
       console.error('Error creating task:', error);
-      // TODO: Show error message to user
+      showError(error instanceof Error ? error.message : 'Failed to create task');
     }
   };
 
   const handleEditTask = async (taskData: Omit<Task, 'id' | 'createdAt'>) => {
-    if (!editingTask) return;
+    if (!editingTask)
+    {
+      return;
+    }
 
     try {
       const updatedTask = await tasksApi.updateTask(editingTask.id, taskData);
@@ -33,9 +39,10 @@ function TasksFeature() {
       );
       setIsEditModalOpen(false);
       setEditingTask(null);
+      showSuccess('Task updated successfully!');
     } catch (error) {
       console.error('Error updating task:', error);
-      // TODO: Show error message to user
+      showError(error instanceof Error ? error.message : 'Failed to update task');
     }
   };
 
