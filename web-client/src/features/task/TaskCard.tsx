@@ -149,9 +149,10 @@ function TaskCard({
             <Select
               size="small"
               value={task.status}
-              onChange={(e) =>
-                onStatusChange(task.id, parseInt(e.target.value) as TaskStatus)
-              }
+              onChange={(e) => {
+                const value = Number(e.target.value) as TaskStatus;
+                onStatusChange(task.id, value);
+              }}
               sx={{ minWidth: 120 }}
               aria-label="Change task status"
             >

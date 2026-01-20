@@ -1,6 +1,5 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {fireEvent, render, screen, waitFor} from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import TaskList from './TaskList';
 import {tasksApi} from '../../api/TaskServiceFactory';
 import {type Task, TaskPriority, TaskStatus} from '../../types';
